@@ -1,30 +1,40 @@
-const mysql = require('mysql2/promise')
+// todo-service.js
+
+const mysql = require('mysql2/promise');
 
 async function getConnection() {
   return await mysql.createConnection({
     host: 'localhost',
     user: 'root', // your user name
-    password: '', // your password
-    database: ''  // your database name
-  })
+    password: 'tjsals6092', // your password
+    database: 'todoapp'  // your database name
+  });
 }
 
-exports.get = async function() {
+exports.get = async function(connection = null) {
   try {
-    const connection = await getConnection()
+    if (!connection) {
+      connection = await getConnection();
+    }
+
     /* results: [ { id: 1, content: 'do the homework' } ] */
     const [results, fields] = await connection.query(
-      'SELECT * FROM `todo` WHERE `id` = 1'
-    )
-    await connection.end()
+        'SELECT * FROM `todos` WHERE `id` = 1'
+    );
 
-    return results[0].content
+    if (!connection) {
+      await connection.end();
+    }
+
+    return results[0].content;
   } catch (err) {
-    console.error(err)
-    throw err
+    console.error(err);
+    throw err;
   }
 }
 
 // post
 // put
 // delete
+
+module.exports = exports; // 모듈로 내보내기
